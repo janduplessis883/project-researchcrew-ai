@@ -5,8 +5,8 @@ from colorama import Fore, init, Back
 
 init(autoreset=True)
 
-from researchcrew-ai.params import LOCAL_GIT_REPO
-from researchcrew-ai.utils import time_it
+from researchcrew_ai.params import LOCAL_GIT_REPO
+from researchcrew_ai.utils import time_it
 
 repo_path = LOCAL_GIT_REPO
 

@@ -15,16 +15,16 @@ clean:
 all: install clean
 
 app:
-	@streamlit run researchcrew-ai/streamlit_app.py
+	@streamlit run src/researchcrew_ai/streamlit_app.py
 
 git_merge:
 	$(MAKE) clean
-	@python researchcrew-ai/automation/git_merge.py
+	@python src/researchcrew_ai/automation/git_merge.py
 	@echo "👍 Git Merge (master) successfull!"
 
 git_push:
 	$(MAKE) clean
-	@python researchcrew-ai/automation/git_push.py
+	@python src/researchcrew_ai/automation/git_push.py
 	@echo "👍 Git Push (branch) successfull!"
 
 test:
@@ -32,4 +32,4 @@ test:
 
 # Specify package name
 lint:
-	@black researchcrew-ai/
+	@black src/researchcrew_ai/

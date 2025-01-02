@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "researchcrew_ai"
+version = "0.1.0"
+description = "An AI-powered app to optimize clinical research EOIs and recruitment strategies."
+authors = [
+    { name = "Jan du Plessis", email = "drjanduplessis@icloud.com" }
+]
+license = { file = "LICENSE" }
+dependencies = [
+    "streamlit",
+    "crewai",
+    "crewai_tools",
+    "requests",
+    "notion-client",
+    "mistune==2.0.4",
+    "click",
+    "black",
+    "streamlit-shadcn-ui",
+    "colorama",
+    "pandas",
+    "loguru"
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",  # Code formatting
+    "pytest",  # Testing framework
+]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+packages = ["researchcrew_ai"]
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+skip-string-normalization = true
