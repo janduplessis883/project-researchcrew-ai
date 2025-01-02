@@ -1,0 +1,249 @@
+data_collection:
+  description: >
+    The datetime_now is {datetime_now}. Explicitly repeat the date today and the current time according to your input {datetime_now}.
+    Gather a complete understanding of the Notion database, including its structure and all tasks or page data.
+    - Use the Notion Database Data Fetcher tool to retrieve the database schema, explaining the structure and properties of the database.
+    - Use the PageDataFetcher Tool to retrieve all page data, ensuring that each page/task is identified with its corresponding page_id.
+  expected_output: >
+    - A full report detailing the database schema and all retrieved pages/tasks.
+    - Present all tasks in a well-formatted Markdown table, including their corresponding page_id, name, duration, priority, and start and end datetime for easy reference when scheduling.
+    - There is no need to extract the Notion page URL, this is not needed.
+
+create_new_tasks:
+  description: >
+    Carefully review the user {prompt}
+    Create task or more then one task where appropriate in the Notion database as required to align with user instructions. The current date and time is {datetime_now}.
+    - When creating new tasks based on user prompts:
+      - Always set the task status to 'Not started'.
+      - Set the priority to the value specified in the user prompt: High, Medium, or Low. If priority is not mentioned, make a judgment and prioritize according to your perceived urgency from the task name.
+      - Set the Due Date to the current date and time, it is now {datetime_now}.
+      - Generate a suitable descriptive task name for the task basted on the user prompt {prompt}, the name should be clear and concise.
+      - Task duration (Duration (minutes) propoerty in the notion database) should be set to your estimation of how long the task will take to complete.
+    - Use a tool to update the Notion Database with the new task.
+  expected_output: >
+    - Brief summary of the newly created tasks with the correct status, priority, and Due Date, and the page_id of the newly created Notion page.
+    - IMPORTANT: Save the page_id of the newly created Notion page for future reference.
+
+
+reschedule_tasks:
+  description: >
+    Reschedule tasks in the Notion database for optimal time management. The current date and time is {datetime_now}, and the next working day is {next_working_day}.
+    - Identify tasks for rescheduling by their page_id.
+    - The first task today should start after the current time {datetime_now}.
+    - Prioritize rescheduling tasks based on their priority: High, Medium, then Low.
+    - Ensure tasks are scheduled within working hours ONLY (Monday - Friday from 09:00 to 16:00).
+    - Reschedule tasks from YESTERDAY that are not marked 'Done' to the next available working day: {next_working_day}.
+    - Reschedule tasks scheduled before the current time {datetime_now} to the next available time slot or to {next_working_day} if the next time slot is after 16:00 today.
+    - Use time-blocking techniques to avoid overlapping tasks and schedule them sequentially.
+    - Reference the 'Duration (minutes)' property to determine how long each task will take, i.e., the difference between start datetime and end datetime.
+    - Assign start and end datetime to tasks that do not have a specified start and end time.
+    - If the current time {datetime_now} is after 16:00, reschedule all today's tasks for the next working day.
+  expected_output: >
+    - A numbered list of tasks to be reschedules, including the task name, page_id, and the new start and end datetime for each task.
+
+
+update_notion_database:
+  description: >
+    Update the Notion database with the new task schedules received from the Calendar Scheduler Specialist agent.
+    The current date and time is {datetime_now}. The next working day is {next_working_day}.
+    - Work through the list of tasks to be rescheduled, ensuring that each task is updated correctly in the Notion database.
+    - Use the RescheduleExistingTasks Tool to reschedule tasks one at a time, ensuring that each task is correctly updated.
+  expected_output: >
+    - A summary of the tasks that have been successfully rescheduled in the Notion database.
+    - A confirmation that all tasks have been updated correctly and are scheduled for the correct date and time.
+    - Report any issues or errors encountered during the update process.
+
+
+online_research_tasks:
+  description: >
+    Conduct detailed online research on a specified topic, focusing on NHS England-related subjects such as policies, news, clinical guidelines, or operational updates. The task requires gathering reliable, up-to-date information and presenting it in a clear and organized format.
+  expected_output: >
+    - A structured document in Markdown format.
+    - A summary section highlighting key findings.
+    - Detailed sections with headings and subheadings, elaborating on each aspect of the research.
+    - References section with properly formatted links to all sources used.
+    - Clear and actionable insights or recommendations based on the research.
+    - IMPORTANT: Pass the Notion page_id, from the newly created Notion page to the next agent.
+
+writer_tasks:
+  description: >
+    IMPORTANT: Note the page_id from the previous agent, this is required to construct your output dictionary.
+    Compile a well-structured, professional report based on the information provided by the research agent. The task involves organizing, summarizing, and elaborating on the research findings to produce a clear and actionable document tailored to the intended audience.
+    - A detailed report in Markdown format.
+    - An executive summary section providing a concise overview of the report.
+    - Organized content with clear headings, subheadings, and bullet points where appropriate.
+    - A recommendations section with actionable insights derived from the research.
+    - A references section with accurate citations for all sources used in the report.
+    - A polished document free of grammatical errors and inconsistencies.
+  expected_output: >
+    - A dictionary containing the report content, and Notion page_id passed from the previous agent. When constructing your output json use doule quotes no single quotes to surround keys and values. The structured as follows:
+      - 'notion_page_id': '...','
+      - 'markdown_report': '...',
+
+appraisal_data_collection:
+  description: >
+    Gather a complete understanding of the Notion database, including its structure and all tasks or page data.
+    - Use the Notion Database Data Fetcher tool to retrieve the database schema, explaining the structure and properties of the database.
+    - Use the AppraisalPageDataFetcher Tool to retrieve all page data, that contains the employee's name: {employee_name}.
+  expected_output: >
+    - A full report detailing the database schema and all retrieved pages.
+    - A Detailed report of the pre-appraisal data for the employee {employee_name}, including their strengths, weaknesses, learning needs, obsticles to achieving their goals, areas where they struggle with workload, and what they are most proud of achiving in the previous year.
+    - There is no need to extract the Notion page URL, this is not needed.
+
+
+appraisal_data_analysis:
+  description: >
+    Analyze the output from appraisla_data_collection.
+    Extract the page_id and all relevant data for the employee, including:
+    Areas where the employee performed well, learning needs, obsticles to achieving their goals, areas where they struggle with workload.
+    What they are most proud of achiving in the previous year.
+  expected_output: >
+    A detailed summary of the employees pre-appraisal data.
+
+
+
+appraisal_report_task:
+  description: >
+    Compile a comprehensive report based on analysis of the data, for the Appraisal year 25/26, your report should include:
+    - Accomplishments in the previous year.
+    - The employee's personal goals and objectives set out by their employer for the next appraisal period.
+    - Challanges they have identified that might keep them form achieving these goals.
+    - The employee's strengths, weaknesses, and opportunities in the current job role.
+    - Any skill or training the employee has identified that might help them in their job role or achieve their goals and objectives.
+    Suggests at least three topics for discussion during the appraisal interview, relevant to each employee's pre-appraisal submission.
+    Develop and implement a customized Personal Development Plan (PDP) for each employee, focusing on 2-3 specific goals that are S pecific, M easurable, A chievable, R elevant, and T ime-bound (SMART), with regular review sessions scheduled to assess progress and adjust the plan as needed.
+    - List resources identified by the Appraisal Research Specialist that can support the employee's development.
+  expected_output: >
+    - A detailed report in markdown format including pre-appraisal report, Goals and Training Opertunities.
+
+
+appraisal_research_task:
+  description: >
+    Conduct online research to identify resources that can support the development of the employee named {employee_name}.
+    - Focus on NHS England approved resources, including training programs, courses, webinars, and other learning materials.
+    - Find specific resources that align with the employee's learning needs, career goals, and areas of improvement.
+    - Provide a detailed summary of each resource, including its relevance to the employee's development and potential impact on their performance.
+    - Include actionable recommendations on how the employee can utilize these resources effectively to enhance their skills and achieve their goals.
+  expected_output: >
+    A detailed report in markdown format of resources found, including a summary of each resource, its relevance and URL.
+
+
+appraisal_audit_task:
+  description: >
+    This task conducts a thorough review of appraisal reports for quality and accuracy.
+    The appraisal audit involves verifying that each section of the report meets the
+    required standards, checking calculations for correctness, and ensuring that data
+    from relevant sources has been accurately incorporated.
+
+    Key focus areas:
+    1. Completeness: Ensure all essential sections are present (e.g., introduction,
+       methodology, data used, findings, conclusion).
+    2. Accuracy: Verify the correctness of numerical data, formulas, references,
+       and calculations.
+    3. Consistency: Check that information is consistent throughout the report
+       and aligns with previously submitted data when applicable.
+    4. Clarity: Confirm the report is easy to read and understand, using clear
+       language and logical organization.
+    5. Compliance: Make sure the appraisal follows any relevant regulatory
+       requirements or industry standards, NHS Staff appraisals
+
+  expected_output: >
+    A finalized “Appraisal Quality Assurance Report” that details:
+
+    1. Summary of Observations:
+       - Brief list of any key findings or discrepancies discovered during the audit.
+
+    2. Detailed Feedback:
+       - Comments on any inconsistent or incorrect data.
+       - Suggestions for rectifying identified issues.
+       - Best practice recommendations to enhance clarity or structure.
+
+    3. Compliance Confirmation:
+       - Statement confirming whether the appraisal meets required regulations/standards
+         or noting any deviations.
+
+    4. Overall Quality Assessment:
+       - Overall verdict on the report’s quality (e.g., “Excellent,” “Good with Minor
+         Corrections,” or “Requires Substantial Revision”).
+       - Final recommendation on report acceptance or recommended changes.
+
+    This output should be provided in a structured format (Markdown)
+
+appraisal_final_report_task:
+  description: >
+    Compile a comprehensive report based on analysis of the data, for the Appraisal year 25/26, your report should include:
+    - All the elements from to original report written by the Appraisal Report Writer.
+    Carefully review the report from the Appraisal Audit Expert and make any necessary corrections or adjustments to ensure the final report meets the required standards of accuracy, completeness, and professional formatting.
+  expected_output: >
+    - A detailed revised final report in markdown format.
+
+
+# Research Crew
+review_study_specifications:
+  description: >
+    Review the study protocol and supporting documentation to extract key insights, operational requirements,
+    and critical factors necessary to successfully execute the study. This includes identifying primary objectives,
+    timelines, eligibility criteria, and resource needs.
+  expected_output: >
+    - A detailed report in markdown format, including:
+      - Report Tilte: 01-the-study - Study: {study_identifier}
+      - Study overview and objectives
+      - Study design
+      - Investigational Product and route of delivery.
+      - Randomisation requirements for example if blinded extra staff will be required.
+      - Key inclusion and exclusion criteria
+      - Resource and staffing requirements
+      - Recruitment strategies
+      - Timeline and milestone breakdown
+      - Any identified risks or challenges with corresponding mitigation strategies
+      - IMPORTANT Highlight any additional questions asked by the sponsor, normally at the end of the study.txt file.
+
+
+participant_recruitment_strategy:
+  description: >
+    Formulate a detailed recruitment strategy. The strategy should outline the methods, timelines, and resources required to recruit the target number of participants for the study.
+    Strategy should be study specific {study_identifier}. Utilize the tool recruitment_retention_toolkit of evidence base recruitment strategies.
+  expected_output: >
+    - A detailed report in markdown format, including:
+      - Report Tilte: 02-recruitment-strategies - Study: {study_identifier}
+      - formulate a detailed recruitment strategy based on the site's capabilities and resources.
+      - The strategy should outline the methods, timelines, and resources required
+      - Recruitment strategies should be study-specific and tailored to the target population.
+      - Include a detailed Plan B if requiretment lacks behind schedule.
+      - reference the recruitment_retention_toolkit for evidence-based recruitment strategies.
+      - include your references in your final report.
+      - search the internet for recruitment strategies for the specific study and include them in your report.
+
+
+
+complete_site_identification_questionnaire:
+  description: >
+    Complete and update the Site Identification Questionnaire using the information provided by other agents and feedback
+    from the Clinical Researcher and Research Coordinator, who did a Study Review and Site Profile respectivcely. Ensure that all data is accurate, comprehensive, and reflects
+    the site's capabilities, recruitment strategies, resources, and potential challenges. DO NOT format or change the structure of the Site Identification Questionnaire document. Answer all questions.
+  expected_output: >
+    - A detailed report in markdown format, giving comprehensive, well structured and considered answers to each question in the Site Identification quistionnaire.
+    - Report Tilte: 03-site-identification-questionnaire - Study: {study_identifier}
+    - Use the site_identification_questions tool to access the content of this document.
+    - Answer all the quiestions in the site-idetification-questionnaire document, adapted the Site Proile created by the Research Coordinator, to the specific study as summarised by the Expert Clinical Researcher.
+    - Adapt your answers to be specific to the study applying for.
+    - For 'Recruitment Strategies' and 'Past Research Milestones' sections, provide detailed information based on the site's historical performance and capabilities. Describe all strategies used in the past in detail adapted to the study.
+    - When estimating the number of patients that can be recruited, provide a realistic estimate based on the site's historical performance and patient population (keeping in mind national prevalence rates) - for the clinical domain of the study.
+    - Ensure that all data from the Site Profile is used in the Site Identification questionnaire.
+    - List all staff research education, past research milestones, list all patient demogrphic data, NIHR under-used Goups data, full equipment list.
+    - For 'Site Past Performance data', give detailed information on the site's historical performance and capabilities. Describe all strategies used in the past in detail adapted to the study.
+    - For additional Infomration requested by the sponsor refer to the study overview created by the Senior Researcher - this will list any additioinal questions you should address and answer.
+    - Include the web link for full clinical research timeline https://thechelseapractice.notion.site
+    - List Languages spoken by research staff.
+
+
+audit_site_identification_questionnaire:
+  description: >
+    Audit the Site Identification Questionnaire for study {study_identifier}, as prepared by the Senior Research Writer.
+    The audit guidelines are provided in an external text document for reference.
+  expected_output: >
+    - A detailed report in markdown format, including:
+      - Report Tilte: 04-submission-audit - Study: {study_identifier}
+      - An overall score out of 10 for the submission EOI for study {study_identifier}.
+      - Highlighted areas requiring improvement with specific details.
+      - Suggested updates or actions to address the identified areas of improvement.
